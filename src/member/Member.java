@@ -1,7 +1,5 @@
 package member;
 
-import books.Book;
-
 public class Member {
     private int memberId;
     private String name;
