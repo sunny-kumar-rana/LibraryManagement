@@ -6,10 +6,14 @@ public abstract class Book {
     private String author;
     private boolean available = true;
 
-    public Book(int id, String title, String author) {
+    public Book(int id, String title, String author, int available) {
             this.id = id;
             this.title = title;
             this.author = author;
+            this.available = switch (available){
+                case 1 -> true;
+                default -> false;
+            };
     }
 
     public int getId(){
@@ -36,5 +40,8 @@ public abstract class Book {
     }
     public String getTitle(){
         return this.title;
+    }
+    public String getAuthor(){
+        return this.author;
     }
 }

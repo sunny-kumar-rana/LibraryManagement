@@ -1,65 +1,81 @@
 package library;
 
 import books.Book;
+import books.EBook;
+import books.PhysicalBook;
+import datatbase.DBMSConn;
 import member.Member;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class Library {
     private List<Book> books = new ArrayList<>();
     private List<Member> members = new ArrayList<>();
+    private final DBMSConn db = new DBMSConn();
 
     public void addBook(Book book){
-        for(Book b : books){
-            if (b.getId() == book.getId()){
-                throw new IllegalArgumentException("Book ID is already present!");
-            }
+//        for(Book b : books){
+//            if (b.getId() == book.getId()){
+//                throw new IllegalArgumentException("Book ID is already present!");
+//            }
+//        }
+        if(book instanceof EBook x){
+            db.insertEBook(x);
+        }else if(book instanceof PhysicalBook px){
+            db.insertPBook(px);
         }
-        books.add(book);
     }
     public void removeBook(int bookId){
         Book book = findBookById(bookId);
         if (!book.isAvailable()){
             throw new IllegalStateException("can't remove borrowed book!");
         }
-        books.remove(book);
+        try{
+            db.removebook(bookId);
+        }catch (SQLException e){
+            System.out.println(e);
+        }
     }
     public void displayAllBooks(){
-        if (books.isEmpty()){
-            System.out.println("No Books Available!");
-            return;
-        }
-        for(Book book : books){
-            System.out.println(book.getInfo());
+        try {
+            db.getBooks();
+        } catch (SQLException e) {
+            System.out.println(e);
         }
     }
 
     public Book findBookById(int id){
-        for (Book b : books){
-            if(b.getId() == id){
-                return b;
-            }
+        try {
+            return db.findBook(id);
+        } catch (SQLException e) {
+            System.out.println(e);
         }
-        throw new NoSuchElementException("Book not found!");
+        return null;
     }
 
 
     public void registerMember(Member member){
-        for(Member m : members){
-            if (m.getMemberId() == member.getMemberId()){
-                throw new IllegalArgumentException("Member ID is already present!");
-            }
+        Member x = null;
+        try {
+            x = db.searchMember(member.getMemberId());
+        } catch (SQLException e) {
+            System.out.println(e);
         }
-        members.add(member);
+        if(x == null){
+            db.insertMember(member);
+        }else{
+            System.out.println("member already exists");
+        }
     }
     public Member findMember(int memberId){
-        for (Member m : members){
-            if(m.getMemberId() == memberId){
-                return m;
-            }
+        try {
+            return db.findMembers(memberId);
+        } catch (SQLException e) {
+            System.out.println(e);
         }
-        throw new NoSuchElementException("Member not found!");
+        return null;
     }
 
 
@@ -87,11 +103,16 @@ public class Library {
     }
 
     public void searchBook(String title){
-        for (Book book : books){
-            if (book.getTitle().toLowerCase().contains(title.toLowerCase())){
-                System.out.println("\n-----------\n"+book.getInfo()+"\n--------------------\n");
-            }
+        Book x = null;
+        try{
+            x = db.searchBook(title);
+        } catch (SQLException e){
+            System.out.println(e);
         }
-        System.out.println("no such books found");
+        if (x == null){
+            System.out.println("no such books found");
+        } else{
+            System.out.println(x);
+        }
     }
 }

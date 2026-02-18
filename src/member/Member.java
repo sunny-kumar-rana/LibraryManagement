@@ -32,6 +32,15 @@ public class Member {
             borrowedBook--;
         }
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getBorrowedBook() {
+        return borrowedBook;
+    }
+
     public String toString(){
         return "----------------\nMember ID - "+memberId+"\nName - "+name+"\nBorrowed Books - "+borrowedBook;
     }

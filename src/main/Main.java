@@ -34,14 +34,14 @@ public class Main {
                                 System.out.println("Enter shelf number : ");
                                 int shelf = sc.nextInt();
                                 sc.nextLine();
-                                library.addBook(new PhysicalBook(id, name, author, shelf));
+                                library.addBook(new PhysicalBook(id, name, author, shelf,1));
                             }
                             case 2 -> {
 
                                 System.out.println("Enter size in MB : ");
                                 double size = sc.nextDouble();
                                 sc.nextLine();
-                                library.addBook(new EBook(id, name, author, size));
+                                library.addBook(new EBook(id, name, author, size,1));
                             }
                             default -> {
                                 System.err.println("Invalid");
