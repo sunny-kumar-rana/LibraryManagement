@@ -11,20 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Library {
-    private List<Book> books = new ArrayList<>();
-    private List<Member> members = new ArrayList<>();
-    private final DBMSConn db = new DBMSConn();
+//    private List<Book> books = new ArrayList<>();
+//    private List<Member> members = new ArrayList<>();
 
     public void addBook(Book book){
-//        for(Book b : books){
-//            if (b.getId() == book.getId()){
-//                throw new IllegalArgumentException("Book ID is already present!");
-//            }
-//        }
+        DBMSConn db = new DBMSConn();
         if(book instanceof EBook x){
             db.insertEBook(x);
         }else if(book instanceof PhysicalBook px){
             db.insertPBook(px);
+        }
+        try {
+            db.close();
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
     public void removeBook(int bookId){
@@ -32,24 +32,32 @@ public class Library {
         if (!book.isAvailable()){
             throw new IllegalStateException("can't remove borrowed book!");
         }
-        try{
+        try(DBMSConn db = new DBMSConn();){
             db.removebook(bookId);
         }catch (SQLException e){
+            System.out.println(e);
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
     public void displayAllBooks(){
         try {
+            DBMSConn db = new DBMSConn();
             db.getBooks();
+            db.close();
         } catch (SQLException e) {
             System.out.println(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     public Book findBookById(int id){
-        try {
+        try(DBMSConn db = new DBMSConn();) {
             return db.findBook(id);
         } catch (SQLException e) {
+            System.out.println(e);
+        } catch (Exception e) {
             System.out.println(e);
         }
         return null;
@@ -58,21 +66,27 @@ public class Library {
 
     public void registerMember(Member member){
         Member x = null;
+        DBMSConn db = new DBMSConn();
         try {
-            x = db.searchMember(member.getMemberId());
+                x = db.searchMember(member.getMemberId());
+                if(x == null){
+                    db.insertMember(member);
+                }else{
+                    System.out.println("member already exists");
+                }
+                db.close();
         } catch (SQLException e) {
             System.out.println(e);
-        }
-        if(x == null){
-            db.insertMember(member);
-        }else{
-            System.out.println("member already exists");
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
     public Member findMember(int memberId){
-        try {
+        try(DBMSConn db = new DBMSConn();) {
             return db.findMembers(memberId);
         } catch (SQLException e) {
+            System.out.println(e);
+        } catch (Exception e) {
             System.out.println(e);
         }
         return null;
@@ -104,9 +118,11 @@ public class Library {
 
     public void searchBook(String title){
         Book x = null;
-        try{
+        try(DBMSConn db = new DBMSConn();){
             x = db.searchBook(title);
         } catch (SQLException e){
+            System.out.println(e);
+        } catch (Exception e) {
             System.out.println(e);
         }
         if (x == null){

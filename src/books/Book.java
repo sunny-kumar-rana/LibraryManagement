@@ -1,5 +1,9 @@
 package books;
 
+import datatbase.DBMSConn;
+
+import java.sql.SQLException;
+
 public abstract class Book {
     private int id;
     private String title;
@@ -27,11 +31,19 @@ public abstract class Book {
             throw new IllegalStateException("Book is already borrowed");
         }
         else {
-            available = false;
+            try(DBMSConn db = new DBMSConn();) {
+                db.setBookAvailabilityFalse(this);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
     }
     public void returnBook(){
-        available = true;
+        try(DBMSConn db = new DBMSConn();){
+            db.setBookAvailabilityTrue(this);
+        } catch (Exception e){
+            System.out.println(e);
+        }
     }
     public abstract String getInfo();
 

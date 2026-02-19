@@ -1,15 +1,19 @@
 package member;
 
+import datatbase.DBMSConn;
+
+import java.sql.SQLException;
+
 public class Member {
     private int memberId;
     private String name;
     private int borrowedBook;
     private int maxAllowedBooks;
 
-    public Member(int memberId, String name, int maxAllowedBooks) {
+    public Member(int memberId, String name, int borrowedBook, int maxAllowedBooks) {
         this.memberId = memberId;
         this.name = name;
-        this.borrowedBook = 0;
+        this.borrowedBook = borrowedBook;
         this.maxAllowedBooks = maxAllowedBooks;
     }
 
@@ -24,11 +28,21 @@ public class Member {
             throw new IllegalStateException("Borrow Limit Reached!");
         }
         else {
+            try(DBMSConn db = new DBMSConn();) {
+                db.memberBorrowBook(this);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
             borrowedBook++;
         }
     }
     public void returnBook(){
         if(borrowedBook>0){
+            try(DBMSConn db = new DBMSConn();) {
+                db.memberReturnBook(this);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
             borrowedBook--;
         }
     }

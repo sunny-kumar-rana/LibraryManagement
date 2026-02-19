@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 
-public class DBMSConn {
+public class DBMSConn implements AutoCloseable{
     private Connection conn = null;
     private Statement st = null;
 
@@ -49,6 +49,17 @@ public class DBMSConn {
 //    }
 
     // book insertion and display methods
+//    public int isAvailable(Book book) throws SQLException {
+//        ResultSet r = st.executeQuery("select is_available from book_list where id = "+book.getId());
+//        r.next();
+//        return r.getInt("is_available");
+//    }
+    public void setBookAvailabilityFalse(Book book) throws SQLException {
+        st.executeUpdate("update book_list set is_available = 0 where book_id = "+book.getId());
+    }
+    public void setBookAvailabilityTrue(Book book) throws SQLException {
+        st.executeUpdate("update book_list set is_available = 1 where book_id = "+book.getId());
+    }
     public boolean isBookAvailable(int id) throws SQLException {
         ResultSet r = st.executeQuery("select is_available from book_list where book_id = "+id);
         if(r.getString("is_available").equalsIgnoreCase("true")){
@@ -80,8 +91,8 @@ public class DBMSConn {
         String query = "select * from book_list";
         ResultSet rs = st.executeQuery(query);
         while (rs.next()){
-            System.out.println("book-id : "+rs.getInt(1)+"book name : "+rs.getString(2)+"book author"+
-                    rs.getString(3)+"size : "+rs.getDouble(4)+"shelf-no : "+rs.getInt(5));
+            System.out.println("\n----Book----\nbook-id : "+rs.getInt(1)+"\nbook name : "+rs.getString(2)+"\nbook author : "+
+                    rs.getString(3)+"\nsize : "+rs.getDouble(4)+"\nshelf-no : "+rs.getInt(5)+"\n");
         }
     }
     public Book findBook(int id) throws SQLException {
@@ -112,9 +123,14 @@ public class DBMSConn {
 
 
     //member insertion and display methods
+//    public boolean canBorrow(Member member) throws SQLException {
+//        ResultSet r = st.executeQuery("select borrowed_books, max_allowed_books from members where member_id = "+member.getMemberId());
+//        r.next();
+//        return r.getInt("borrowed_books") < r.getInt("max_allowed_books");
+//    }
     public void insertMember(Member member){
         String query =
-                String.format("INSERT INTO members(member_name,borrowed_books) values(%d,'%s','%d')",member.getMemberId(),member.getName(),member.getBorrowedBook());
+                String.format("INSERT INTO members(member_id,member_name,borrowed_books) values(%d,'%s','%d')",member.getMemberId(),member.getName(),member.getBorrowedBook());
         try {
             System.out.println(st.executeUpdate(query)+"inserted");
         } catch (SQLException e) {
@@ -124,9 +140,10 @@ public class DBMSConn {
     public Member searchMember(int memberId) throws SQLException {
         String query = "select * from members where member_id = "+memberId;
         ResultSet r = st.executeQuery(query);
-        r.next();
-        if(r.getInt("member_id") == memberId){
-            return new Member(r.getInt(1),r.getString(2),r.getInt(3));
+        if(r.next()) {
+            if (r.getInt("member_id") == memberId) {
+                return new Member(r.getInt(1), r.getString(2), r.getInt(3), r.getInt(4));
+            }
         }
         return null;
     }
@@ -142,6 +159,33 @@ public class DBMSConn {
     public Member findMembers(int id) throws SQLException {
         ResultSet r = st.executeQuery("Select * from members where member_id = "+id);
         r.next();
-        return new Member(r.getInt(1),r.getString(2),3);
+        return new Member(r.getInt(1), r.getString(2),r.getInt(3), r.getInt(4));
+    }
+    public void memberBorrowBook(Member member) throws SQLException {
+        int x = st.executeUpdate("update members set borrowed_books = borrowed_books + 1 where member_id = "+member.getMemberId());
+        if (x == 1){
+            System.out.println("success");
+        }
+        else {
+            System.out.println("something went wrong");
+        }
+    }public void memberReturnBook(Member member) throws SQLException {
+        int x = st.executeUpdate("update members set borrowed_books = borrowed_books - 1 where member_id = "+member.getMemberId());
+        if (x == 1){
+            System.out.println("success");
+        }
+        else {
+            System.out.println("something went wrong");
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (st != null && !st.isClosed()){
+            st.close();
+        }
+        if(conn != null && !conn.isClosed()){
+            conn.close();
+        }
     }
 }
