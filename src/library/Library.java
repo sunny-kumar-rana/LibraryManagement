@@ -33,7 +33,7 @@ public class Library {
             throw new IllegalStateException("can't remove borrowed book!");
         }
         try(DBMSConn db = new DBMSConn();){
-            db.removebook(bookId);
+            db.removeBook(bookId);
         }catch (SQLException e){
             System.out.println(e);
         } catch (Exception e) {

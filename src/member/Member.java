@@ -5,10 +5,10 @@ import datatbase.DBMSConn;
 import java.sql.SQLException;
 
 public class Member {
-    private int memberId;
-    private String name;
+    private final int memberId;
+    private final String name;
     private int borrowedBook;
-    private int maxAllowedBooks;
+    private final int maxAllowedBooks;
 
     public Member(int memberId, String name, int borrowedBook, int maxAllowedBooks) {
         this.memberId = memberId;

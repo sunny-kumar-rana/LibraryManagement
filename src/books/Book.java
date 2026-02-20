@@ -5,19 +5,16 @@ import datatbase.DBMSConn;
 import java.sql.SQLException;
 
 public abstract class Book {
-    private int id;
-    private String title;
-    private String author;
+    private final int id;
+    private final String title;
+    private final String author;
     private boolean available = true;
 
     public Book(int id, String title, String author, int available) {
             this.id = id;
             this.title = title;
             this.author = author;
-            this.available = switch (available){
-                case 1 -> true;
-                default -> false;
-            };
+            this.available = available == 1;
     }
 
     public int getId(){

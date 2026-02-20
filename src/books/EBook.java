@@ -2,7 +2,7 @@ package books;
 
 public class EBook extends Book{
 
-    private double fileSizeMB;
+    private final double fileSizeMB;
 
     public EBook(int id, String title, String author, double fileSizeMB, int available){
         super(id, title, author,available);

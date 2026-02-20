@@ -2,9 +2,11 @@ package main;
 
 import books.EBook;
 import books.PhysicalBook;
+import datatbase.DBMSConn;
 import library.Library;
 import member.Member;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -14,7 +16,7 @@ public class Main {
 
         int input;
         while (true){
-            System.out.println("1.Add Book\n2.Remove Book\n3.Display all Books\n4.Register Member\n5.Borrow Book\n6.Return Book\n7.Search Book\n8.Exit");
+            System.out.println("1.Add Book\n2.Remove Book\n3.Display all Books\n4.Register Member\n5.Show all Members\n6.Borrow Book\n7.Return Book\n8.Search Book\n9.Exit");
             input = sc.nextInt();
             sc.nextLine();
             try {
@@ -69,13 +71,12 @@ public class Main {
 //                        sc.nextLine();
                         library.registerMember(new Member(id,name,0,3));
                     }
-                    case 5 -> {
-                        System.out.println("Enter Member id : ");
-                        int memberId = sc.nextInt();
-                        System.out.println("Enter Book id : ");
-                        int bookId = sc.nextInt();
-                        sc.nextLine();
-                        library.borrowBook(bookId,memberId);
+                    case 5 ->{
+                        try(DBMSConn db = new DBMSConn()){
+                            System.out.println(db.getMembers());
+                        } catch (SQLException e){
+                            System.out.println(e);
+                        }
                     }
                     case 6 -> {
                         System.out.println("Enter Member id : ");
@@ -83,14 +84,22 @@ public class Main {
                         System.out.println("Enter Book id : ");
                         int bookId = sc.nextInt();
                         sc.nextLine();
-                        library.returnBook(bookId,memberId);
+                        library.borrowBook(bookId,memberId);
                     }
                     case 7 -> {
+                        System.out.println("Enter Member id : ");
+                        int memberId = sc.nextInt();
+                        System.out.println("Enter Book id : ");
+                        int bookId = sc.nextInt();
+                        sc.nextLine();
+                        library.returnBook(bookId,memberId);
+                    }
+                    case 8 -> {
                         System.out.println("enter book title to search");
                         String keyword = sc.nextLine();
                         library.searchBook(keyword.trim());
                     }
-                    case 8 -> {
+                    case 9 -> {
                         System.exit(0);
                     }
                     default -> {
