@@ -66,9 +66,6 @@ public class Main {
                         sc.nextLine();
                         System.out.println("Enter Member Name : ");
                         String name = sc.nextLine();
-//                        System.out.println("enter max allowed books : ");
-//                        int allowedBooks = sc.nextInt();
-//                        sc.nextLine();
                         library.registerMember(new Member(id,name,0,3));
                     }
                     case 5 ->{

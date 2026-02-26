@@ -33,20 +33,6 @@ public class DBMSConn implements AutoCloseable{
         }
     }
 
-    //input check methods
-//    private void checkString(String s){
-//        if(s.trim().isBlank()||s.isEmpty()){
-//            throw new RuntimeException("can't leave fields blank");
-//        }
-//    }private void checkInt(int x){
-//        if(x <= 0 || x>999){
-//            throw new RuntimeException("wrong value");
-//        }
-//    }private void checkDouble(double x){
-//        if(x <= 0 || x>999){
-//            throw new RuntimeException("wrong value");
-//        }
-//    }
 
     // book insertion and display methods
 //    public int isAvailable(Book book) throws SQLException {
